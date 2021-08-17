@@ -37,9 +37,9 @@
             // number of milliseconds per tick
             let tickSpeed = 100;
             // distance per tick
-            // add 1% to correct for setInterval being slow
+            // clock hand may be off because setinterval is slow
             // https://stackoverflow.com/questions/23981382/setinterval-delays-not-accurate
-            let tickDistance = 2 * Math.PI * tickSpeed / maxNumMilliseconds * 1.01;
+            let tickDistance = 2 * Math.PI * tickSpeed / maxNumMilliseconds;
             // radius of circle
             let radius = 250;
             // current timer interval object
@@ -95,17 +95,60 @@
                 renderLargeHand();
             }
 
+            function windTimer(duration, callback) {
+                // time per tick in milliseconds
+                let windTickSpeed = 10;
+                // time it should take to wind the timer in milliseconds
+                let windTotalTime = 3000;
+                // total number of ticks
+                let windTotalTicks = windTotalTime / windTickSpeed;
+                // deviation from average distance for the largest tick as a multiplier
+                let windDistanceDeviation = 2
+                // calculate target angle based on max time
+                let targetAngle = (maxNumMilliseconds - duration) / maxNumMilliseconds * 2*Math.PI - Math.PI/2;
+                // calculate average distance per tick
+                let windTickDistanceAverage = (curAngleLarge - targetAngle) / windTotalTicks;
+                // max tick distance
+                let windTickDistanceMax = windTickDistanceAverage * windDistanceDeviation;
+                // min tick distance(starting distance)
+                // only half the deviation of the largest distance because there are two short ticks for each long tick
+                // entire animation looks like: short -> long -> short
+                let windTickDistanceMin = windTickDistanceAverage * (1 - (windDistanceDeviation - 1));
+                // starting tick distance
+                let windTickDistance = windTickDistanceMin;
+                // how much to increment the tick distance by
+                // should reach max distance at halfway point
+                let windTickDistanceIncrement = (windTickDistanceMax - windTickDistanceMin) / (windTotalTicks/2);
+
+                let currentTick = 0;
+                let wind = setInterval(() => {
+                    if (currentTick == windTotalTicks/2) {
+                        windTickDistanceIncrement = -windTickDistanceIncrement;
+                    }
+                    windTickDistance += windTickDistanceIncrement;
+                    curAngleLarge = curAngleLarge - windTickDistance;
+                    renderLargeHand();
+                    currentTick++;
+                    if (currentTick == windTotalTicks) {
+                        console.log(curAngleLarge);
+                        console.log(targetAngle);
+                        console.log(curAngleLarge == targetAngle)
+                        clearInterval(wind);
+                        callback();
+                    }
+                }, windTickSpeed);
+            }
+
             // takes duration in milliseconds
             function startTimer(duration) {
                 // clear any existing timers
                 stopTimer();
-                // calculate starting angle based on max time
-                curAngleLarge = (maxNumMilliseconds - duration) / maxNumMilliseconds * 2*Math.PI - Math.PI/2;
-                console.log(curAngleLarge)
-                console.log(tickDistance)
-                document.getElementById('sound-ticking').play();
-                timer = setInterval(tickTimer, tickSpeed, tickDistance);
-                setTimeout(stopTimer, duration);
+                curAngleLarge = 3/2*Math.PI;
+                windTimer(duration, () => {
+                    document.getElementById('sound-ticking').play();
+                    timer = setInterval(tickTimer, tickSpeed, tickDistance);
+                    setTimeout(stopTimer, duration);
+                })
             }
 
             function stopTimer() {
