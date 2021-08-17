@@ -32,9 +32,18 @@
         <script>
             // angle of large hand
             let curAngleLarge = 3 * Math.PI / 2;
-            let curTick = 0;
+            // number of milliseconds in the timer
+            let maxNumMilliseconds = 60 * 1000;
+            // number of milliseconds per tick
+            let tickSpeed = 100;
+            // distance per tick
+            // add 1% to correct for setInterval being slow
+            // https://stackoverflow.com/questions/23981382/setinterval-delays-not-accurate
+            let tickDistance = 2 * Math.PI * tickSpeed / maxNumMilliseconds * 1.01;
             // radius of circle
             let radius = 250;
+            // current timer interval object
+            let timer = undefined;
             function createMark(radius, angle, length, offset, className) {
                 let mark = document.createElementNS('http://www.w3.org/2000/svg', 'line');
                 mark.setAttribute('class', className);
@@ -75,28 +84,46 @@
                 }
             }
 
-            function tickTimer(angle) {
-                curAngleLarge = (curAngleLarge + angle) % (2*Math.PI);
+            function renderLargeHand() {
                 let largeHand = document.getElementById('hand-large');
                 largeHand.setAttribute('x2', radius + Math.cos(curAngleLarge) * radius);
                 largeHand.setAttribute('y2', radius + Math.sin(curAngleLarge) * radius);
-                // setup call for next tick
-                if (curAngleLarge != 3 * Math.PI / 2) {
-                    setTimeout(tickTimer, 1000, angle);
-                } else {
-                    return;
-                }
             }
 
-            function startTimer(angle) {
-                curAngleLarge = 3 * Math.PI / 2;
-                setTimeout(tickTimer, 1000, angle);
+            function tickTimer() {
+                curAngleLarge = (curAngleLarge + tickDistance);
+                renderLargeHand();
+            }
+
+            // takes duration in milliseconds
+            function startTimer(duration) {
+                // clear any existing timers
+                stopTimer();
+                // calculate starting angle based on max time
+                curAngleLarge = (maxNumMilliseconds - duration) / maxNumMilliseconds * 2*Math.PI - Math.PI/2;
+                console.log(curAngleLarge)
+                console.log(tickDistance)
+                document.getElementById('sound-ticking').play();
+                timer = setInterval(tickTimer, tickSpeed, tickDistance);
+                setTimeout(stopTimer, duration);
+            }
+
+            function stopTimer() {
+                clearInterval(timer);
+                curAngleLarge = 3/2*Math.PI;
+                renderLargeHand();
+                document.getElementById('sound-ticking').pause();
             }
 
         </script>
-        <svg xmlns='http://www.w3.org/2000/svg' height=500 width=500 id='clock' onLoad="generateClockMarkings();startTimer(0.05*Math.PI)">
+        <form onsubmit="startTimer(document.getElementById('duration').value * 1000);return false;">
+            Enter the amount of time you want the timer to be(in seconds): <input type=number max=60 min=1 id="duration"/>
+            <input type="submit" value="Start timer" />
+        </form>
+        <svg xmlns='http://www.w3.org/2000/svg' height=500 width=500 id='clock' onLoad="generateClockMarkings();startTimer(59 * 1000)">
             <line x1='50%' y1='50%' x2='50%' y2='0%' class='hand-large' id='hand-large'/>
             <text x='50%' y='75%' fill='black' dominant-baseline="middle" text-anchor="middle">Timer</text>
         </svg>
+        <audio hidden='true' src='./sounds/ticking.mp3' loop='true' id='sound-ticking'></audio>
     </body>
 </html>
