@@ -44,6 +44,11 @@
             let radius = 250;
             // current timer interval object
             let timer = undefined;
+            // current timer tick
+            let timerTick = 0;
+            // starting angle for timer
+            let targetAngle = 3 * Math.PI / 2;
+
             function createMark(radius, angle, length, offset, className) {
                 let mark = document.createElementNS('http://www.w3.org/2000/svg', 'line');
                 mark.setAttribute('class', className);
@@ -90,8 +95,9 @@
                 largeHand.setAttribute('y2', radius + Math.sin(curAngleLarge) * radius);
             }
 
-            function tickTimer() {
-                curAngleLarge = (curAngleLarge + tickDistance);
+            function tickTimer(startTime) {
+                // calculate new angle independent of the previous angle using time to get where we SHOULD be
+                curAngleLarge = targetAngle + tickDistance * (((new Date).getTime() - startTime) / tickSpeed);
                 renderLargeHand();
             }
 
@@ -104,15 +110,11 @@
                 let windTotalTicks = windTotalTime / windTickSpeed;
                 // deviation from average distance for the largest tick as a multiplier
                 let windDistanceDeviation = 2
-                // calculate target angle based on max time
-                let targetAngle = (maxNumMilliseconds - duration) / maxNumMilliseconds * 2*Math.PI - Math.PI/2;
                 // calculate average distance per tick
                 let windTickDistanceAverage = (curAngleLarge - targetAngle) / windTotalTicks;
                 // max tick distance
                 let windTickDistanceMax = windTickDistanceAverage * windDistanceDeviation;
                 // min tick distance(starting distance)
-                // only half the deviation of the largest distance because there are two short ticks for each long tick
-                // entire animation looks like: short -> long -> short
                 let windTickDistanceMin = windTickDistanceAverage * (1 - (windDistanceDeviation - 1));
                 // starting tick distance
                 let windTickDistance = windTickDistanceMin;
@@ -143,10 +145,12 @@
             function startTimer(duration) {
                 // clear any existing timers
                 stopTimer();
-                curAngleLarge = 3/2*Math.PI;
+                // calculate target angle based on max time
+                targetAngle = (maxNumMilliseconds - duration) / maxNumMilliseconds * 2*Math.PI - Math.PI/2;
                 windTimer(duration, () => {
                     document.getElementById('sound-ticking').play();
-                    timer = setInterval(tickTimer, tickSpeed, tickDistance);
+                    let startTime = (new Date).getTime();
+                    timer = setInterval(tickTimer, tickSpeed, startTime);
                     setTimeout(stopTimer, duration);
                 })
             }
