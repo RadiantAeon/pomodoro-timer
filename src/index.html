@@ -51,11 +51,18 @@
             let timerTick = 0;
             // starting angle for timer
             let targetAngle = 3 * Math.PI / 2;
+            // current units
+            let unit = 'minute';
 
             // because javascript mod returns negative numbers for some reason
             // this is fine
             function mod(n, m) {
                 return ((n % m) + m) % m;
+            }
+
+            // recalculate tick distance if maxNumMilliseconds changed for example
+            function calculateTickDistance() {
+                tickDistance = 2 * Math.PI * tickSpeed / maxNumMilliseconds;
             }
 
             function createMark(radius, angle, length, offset, className) {
@@ -191,12 +198,30 @@
                 document.getElementById('sound-ticking').pause();
             }
 
+            // change the units used for the timer
+            function changeTimeUnits(newUnit) {
+                unit = newUnit;
+                switch(newUnit) {
+                    case 'second': maxNumMilliseconds = 60 * 1000; break;
+                    case 'minute': maxNumMilliseconds = 60 * 60 * 1000; break;
+                    case 'hour':   maxNumMilliseconds = 60 * 60 * 60 * 1000; break;
+                }
+                document.getElementById('unit').innerText = newUnit + 's';
+                calculateTickDistance();
+            }
+
+            function init() {
+                changeTimeUnits('minute');
+                generateClockMarkings();
+                renderLargeHand();
+            }
+
         </script>
-        <form onsubmit="startTimer(document.getElementById('duration').value * 1000 * 60);return false;">
-            Enter the amount of time you want the timer to be(in minutes): <input type=number max=60 min=0 id="duration"/>
+        <form onsubmit="startTimer(document.getElementById('duration').value * maxNumMilliseconds / 60);return false;">
+            Enter the amount of time you want the timer to be(in <strong id='unit'></strong>): <input type=number max=60 min=0 id="duration"/>
             <input type="submit" value="Start timer" />
         </form>
-        <svg xmlns='http://www.w3.org/2000/svg' height=500 width=500 id='clock' onLoad="generateClockMarkings();renderLargeHand();">
+        <svg xmlns='http://www.w3.org/2000/svg' height=500 width=500 id='clock' onLoad="init();">
             <line x1='50%' y1='50%' x2='50%' y2='0%' class='hand-large' id='hand-large'/>
             <text x='50%' y='75%' fill='black' dominant-baseline="middle" text-anchor="middle">Timer</text>
         </svg>
