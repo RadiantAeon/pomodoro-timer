@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+  nginx:
+    image: nginx:latest
+
+    restart: unless-stopped
+
+    volumes:
+      - ./src:/var/www/html
+      - ./nginx.conf:/etc/nginx/nginx.conf
+
+    labels:
+      - "traefik.http.routers.timer.rule=Host(`timer.realawesomeness.me`)"
+      - "traefik.http.routers.timer.tls=true"
+      - "traefik.http.routers.timer.tls.certResolver=letsencrypt"
+      - "traefik.http.routers.timer.entrypoints=websecure"
+      - "traefik.http.services.timer.loadbalancer.server.port=80"
+      - "traefik.docker.network=traefik"
+
+    networks:
+      - traefik
+
+networks:
+  traefik:
+    external: true
