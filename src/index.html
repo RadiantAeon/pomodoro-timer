@@ -38,6 +38,7 @@
             text {
                 fill: black;
                 text-anchor: middle;
+                font-size: 18px;
             }
             foreignObject {
                 text-anchor: middle;
@@ -254,7 +255,7 @@
         </form>
         <svg xmlns='http://www.w3.org/2000/svg' id='clock' onLoad="init();">
             <line x1='50%' y1='50%' x2='50%' y2='0%' class='hand-large' id='hand-large'/>
-            <text x='50%' y='75%'>Timer</text>
+            <text x='50%' y='75%'><a href='https://github.com/RealAwesomeness/pomodoro-timer'>Timer</a></text>
         </svg>
         <audio hidden='true' src='./sounds/ticking.mp3' loop='true' id='sound-ticking'></audio>
         <audio hidden='true' src='./sounds/alarm.mp3' id='sound-alarm'></audio>
