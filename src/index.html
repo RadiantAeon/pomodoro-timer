@@ -5,7 +5,11 @@
         <meta charset="UTF-8">
         <style>
             svg {
-                margin: auto;
+                margin-left: auto;
+                margin-right: auto;
+                margin-top: 5%;
+                text-align: center;
+                display: block;
                 width: auto;
                 height: auto;
             }
@@ -29,6 +33,11 @@
             text {
                 fill: black;
             }
+            form {
+                margin-left: auto;
+                margin-right: auto;
+                text-align: center;
+            }
         </style>
     </head>
     <body>
@@ -44,7 +53,7 @@
             // https://stackoverflow.com/questions/23981382/setinterval-delays-not-accurate
             let tickDistance = 2 * Math.PI * tickSpeed / maxNumMilliseconds;
             // radius of circle
-            let radius = 250;
+            let radius = 350;
             // current timer interval object
             let timer = undefined;
             // current timer tick
@@ -101,13 +110,13 @@
                 // space between small marks
                 let smallIncrement = largeIncrement / 5;
                 // length of each large mark
-                let largeLength = 30;
+                let largeLength = radius * 0.1;
                 // length of each small mark
-                let smallLength = 20;
+                let smallLength = largeLength * 2/3;
                 // offset from clock circle for large marks
-                let largeOffset = 30;
+                let largeOffset = radius * 0.1;
                 // offset from clock circle for small marks
-                let smallOffset = 40;
+                let smallOffset = largeOffset * 4/3;
                 let clock = document.getElementById('clock');
 
                 // generate large markings
@@ -125,7 +134,7 @@
             }
 
             function renderLargeHand() {
-                let largeHandOffset = 30;
+                let largeHandOffset = radius * 0.1;
                 let largeHand = document.getElementById('hand-large');
                 largeHand.setAttribute('x2', radius + Math.cos(curAngleLarge) * (radius - largeHandOffset));
                 largeHand.setAttribute('y2', radius + Math.sin(curAngleLarge) * (radius - largeHandOffset));
@@ -211,6 +220,9 @@
             }
 
             function init() {
+                let clock = document.getElementById('clock');
+                clock.setAttribute('height', radius * 2);
+                clock.setAttribute('width', radius * 2)
                 changeTimeUnits('minute');
                 generateClockMarkings();
                 renderLargeHand();
@@ -221,7 +233,7 @@
             Enter the amount of time you want the timer to be(in <strong id='unit'></strong>): <input type=number max=60 min=0 id="duration"/>
             <input type="submit" value="Start timer" />
         </form>
-        <svg xmlns='http://www.w3.org/2000/svg' height=500 width=500 id='clock' onLoad="init();">
+        <svg xmlns='http://www.w3.org/2000/svg' id='clock' onLoad="init();">
             <line x1='50%' y1='50%' x2='50%' y2='0%' class='hand-large' id='hand-large'/>
             <text x='50%' y='75%' fill='black' dominant-baseline="middle" text-anchor="middle">Timer</text>
         </svg>
