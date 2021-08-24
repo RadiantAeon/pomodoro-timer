@@ -34,6 +34,13 @@
             }
             text {
                 fill: black;
+                text-anchor: middle;
+            }
+            foreignObject {
+                text-anchor: middle;
+            }
+            p.time-unit {
+                display: inline;
             }
         </style>
     </head>
@@ -213,7 +220,7 @@
                     case 'minute': maxNumMilliseconds = 60 * 60 * 1000; break;
                     case 'hour':   maxNumMilliseconds = 60 * 60 * 60 * 1000; break;
                 }
-                document.getElementById('unit').innerText = newUnit + 's';
+                document.getElementById('time-unit').innerText = newUnit + 's';
                 calculateTickDistance();
             }
 
@@ -228,12 +235,13 @@
 
         </script>
         <form onsubmit="startTimer(document.getElementById('duration').value * maxNumMilliseconds / 60);return false;">
-            Enter the amount of time you want the timer to be(in <strong id='unit'></strong>): <input type=number max=60 min=0 id="duration"/>
+            <label for='duration'>Duration of the timer(in <p class='time-unit' id='time-unit'></p>): </label>
+            <input type=number max=60 min=0 value=25 id="duration"/><br>
             <input type="submit" value="Start timer" />
         </form>
         <svg xmlns='http://www.w3.org/2000/svg' id='clock' onLoad="init();">
             <line x1='50%' y1='50%' x2='50%' y2='0%' class='hand-large' id='hand-large'/>
-            <text x='50%' y='75%' fill='black' dominant-baseline="middle" text-anchor="middle">Timer</text>
+            <text x='50%' y='75%'>Timer</text>
         </svg>
         <audio hidden='true' src='./sounds/ticking.mp3' loop='true' id='sound-ticking'></audio>
         <audio hidden='true' src='./sounds/alarm.mp3' id='sound-alarm'></audio>
