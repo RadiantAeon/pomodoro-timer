@@ -4,11 +4,13 @@
     <head>
         <meta charset="UTF-8">
         <style>
-            svg {
+            * {
                 margin-left: auto;
                 margin-right: auto;
-                margin-top: 5%;
                 text-align: center;
+            }
+            svg {
+                margin-top: 30px;
                 display: block;
                 width: auto;
                 height: auto;
@@ -32,11 +34,6 @@
             }
             text {
                 fill: black;
-            }
-            form {
-                margin-left: auto;
-                margin-right: auto;
-                text-align: center;
             }
         </style>
     </head>
@@ -229,6 +226,7 @@
             }
 
         </script>
+        <h3>If the timer isn't working, you may need to allow us to play audio.</h3>
         <form onsubmit="startTimer(document.getElementById('duration').value * maxNumMilliseconds / 60);return false;">
             Enter the amount of time you want the timer to be(in <strong id='unit'></strong>): <input type=number max=60 min=0 id="duration"/>
             <input type="submit" value="Start timer" />
