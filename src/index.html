@@ -9,6 +9,9 @@
                 margin-right: auto;
                 text-align: center;
             }
+            p,label {
+                font-size: 20px;
+            }
             svg {
                 margin-top: 30px;
                 display: block;
@@ -42,6 +45,16 @@
             p.time-unit {
                 display: inline;
             }
+            input.timer-start {
+                margin-top: 10px;
+                width: 150px;
+                height: 50px;
+            }
+            input.timer-duration {
+                width: 60px;
+                height: 25px;
+                font-size: 14px;
+            }
         </style>
     </head>
     <body>
@@ -51,7 +64,7 @@
             // number of milliseconds in the timer
             let maxNumMilliseconds = 60 * 60 * 1000;
             // number of milliseconds per tick
-            let tickSpeed = 100;
+            let tickSpeed = 150;
             // distance per tick
             // clock hand may be off because setinterval is slow
             // https://stackoverflow.com/questions/23981382/setinterval-delays-not-accurate
@@ -236,8 +249,8 @@
         </script>
         <form onsubmit="startTimer(document.getElementById('duration').value * maxNumMilliseconds / 60);return false;">
             <label for='duration'>Duration of the timer(in <p class='time-unit' id='time-unit'></p>): </label>
-            <input type=number max=60 min=0 value=25 id="duration"/><br>
-            <input type="submit" value="Start timer" />
+            <input type=number max=60 min=0 value=25 id="duration" class='timer-duration'/><br>
+            <input type="submit" class='timer-start' value="Start timer" />
         </form>
         <svg xmlns='http://www.w3.org/2000/svg' id='clock' onLoad="init();">
             <line x1='50%' y1='50%' x2='50%' y2='0%' class='hand-large' id='hand-large'/>
