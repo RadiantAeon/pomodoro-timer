@@ -193,7 +193,8 @@
                     document.getElementById('sound-ticking').play();
                     let startTime = (new Date).getTime();
                     timer = setInterval(tickTimer, tickSpeed, startTime);
-                    setTimeout(stopTimer, duration);
+                    // set a timeout to stop the timer and play the alarm
+                    setTimeout(() => {stopTimer();document.getElementById('sound-alarm').play()}, duration);
                 })
             }
 
@@ -226,7 +227,6 @@
             }
 
         </script>
-        <h3>If the timer isn't working, you may need to allow us to play audio.</h3>
         <form onsubmit="startTimer(document.getElementById('duration').value * maxNumMilliseconds / 60);return false;">
             Enter the amount of time you want the timer to be(in <strong id='unit'></strong>): <input type=number max=60 min=0 id="duration"/>
             <input type="submit" value="Start timer" />
@@ -236,5 +236,6 @@
             <text x='50%' y='75%' fill='black' dominant-baseline="middle" text-anchor="middle">Timer</text>
         </svg>
         <audio hidden='true' src='./sounds/ticking.mp3' loop='true' id='sound-ticking'></audio>
+        <audio hidden='true' src='./sounds/alarm.mp3' id='sound-alarm'></audio>
     </body>
 </html>
